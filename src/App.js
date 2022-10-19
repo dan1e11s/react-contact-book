@@ -1,25 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Header from './components/Header';
+import AddContact from './components/AddContact';
+import ContactList from './components/ContactList';
+import EditContact from './components/EditContact';
 
-function App() {
+const App = () => {
+
+    const [contacts, setContacts] = useState([]);
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    function addContact(newContact) {
+      let newContacts = [...contacts];
+      newContacts.push(newContact);
+      // console.log(newContacts);
+      setContacts(newContacts);
+      handleClose();
+    };
+
+    function deleteContact(id) {
+      let newContacts = [...contacts];
+      newContacts = newContacts.filter(item => item.id !== id);
+      setContacts(newContacts);
+    }
+
+    const [showEdit, setShowEdit] = useState(false);
+
+    const handleEditClose = () => setShowEdit(false);
+    const handleEditShow = () => setShowEdit(true);
+
+    const [editContact, setEditContact] = useState({});
+
+    function handleEdit(id) {
+      let newContact = contacts.find(item => item.id === id);
+      setEditContact(newContact);
+
+      handleEditShow();
+    };
+
+    function addEditContact(obj) {
+      let newContacts = contacts.map(item => {
+        if(item.id === obj.id) {
+          return obj;
+        };
+        return item;
+      });
+
+      setContacts(newContacts);
+      handleEditClose()
+    }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Header handleShow={handleShow}/>
+      <AddContact show={show} handleClose={handleClose} addContact={addContact} />
+      <ContactList contacts={contacts} deleteContact={deleteContact} handleEdit={handleEdit} />
+      {showEdit && <EditContact editContact={editContact} showEdit={showEdit} handleEditClose={handleEditClose} addEditContact={addEditContact} />}
+    </>
+  )
 }
 
-export default App;
+export default App
